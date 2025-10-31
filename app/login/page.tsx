@@ -32,7 +32,7 @@ export default function LoginPage() {
       // Wait a moment for session to be established
       await new Promise(resolve => setTimeout(resolve, 500))
       
-      // Check for existing profile; if found, go home, else onboarding
+      // Check for existing profile; if found, go to eligibility, else onboarding
       const { data: userRes, error: userErr } = await supabase.auth.getUser()
       if (userErr || !userRes?.user?.id) {
         setLoading(false)
@@ -52,7 +52,7 @@ export default function LoginPage() {
       }
       
       setLoading(false)
-      router.push(profile ? '/' : '/onboarding')
+      router.push(profile ? '/eligibility' : '/onboarding')
     } catch (e: any) {
       setLoading(false)
       setError(e?.message || 'An unexpected error occurred. Please try again.')

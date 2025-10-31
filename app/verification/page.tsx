@@ -20,6 +20,7 @@ export default function VerificationPage() {
   const [loading, setLoading] = useState(false)
   const tessRef = useRef<TesseractNS | null>(null)
   const pdfRef = useRef<PdfJsLib | null>(null)
+  const verifyingRef = useRef(false)
 
   // Load greeting and expected Aadhaar from latest loan file, fallback to profile
   useEffect(() => {
@@ -184,6 +185,32 @@ export default function VerificationPage() {
     }
   }
 
+  const verifyNow = async () => {
+    if (verifyingRef.current) return
+    verifyingRef.current = true
+    try {
+      const { data: auth } = await supabase.auth.getUser()
+      const uid = auth.user?.id
+      if (!uid) return
+      const expected = (expectedAadhaar || '').replace(/\D/g, '')
+      if (!expected || expected.length !== 12) return
+      // Persist expected into eligibility.pan_or_aadhaar
+      await supabase.from('eligibility').upsert({ user_id: uid, pan_or_aadhaar: expected }, { onConflict: 'user_id' })
+      // Load stored to compare when OCR not present
+      const { data: elig } = await supabase.from('eligibility').select('pan_or_aadhaar').eq('user_id', uid).maybeSingle()
+      const stored = (elig?.pan_or_aadhaar ? String(elig.pan_or_aadhaar) : '').replace(/\D/g, '')
+      const candidate = foundAadhaar ? foundAadhaar.replace(/\D/g, '') : stored
+      if (candidate && candidate.length === 12 && candidate === expected) {
+        await supabase.from('eligibility').update({ verified: 'yes' }).eq('user_id', uid)
+        setMatch(true)
+      } else {
+        setMatch(false)
+      }
+    } finally {
+      verifyingRef.current = false
+    }
+  }
+
   return (
     <main className="min-h-screen bg-white text-black">
       {/* Navbar (same as main) */}
@@ -196,8 +223,7 @@ export default function VerificationPage() {
                 { href: "/eligibility", label: "ELIGIBILITY" },
                 { href: "/verification", label: "VERIFICATION", active: true },
                 { href: "/offers", label: "OFFERS" },
-                { href: "/#tracker", label: "TRACKER" },
-                { href: "/#sanction", label: "SANCTION" },
+                { href: "/tracker", label: "TRACKER" },
                 { href: "/account", label: "MY ACCOUNT" },
               ].map((item) => (
                 <li key={item.label}>
@@ -296,6 +322,7 @@ export default function VerificationPage() {
               <Row k="Matched" v={match == null ? '—' : match ? 'Yes' : 'No'} />
             </div>
             <div className="mt-6 flex items-center gap-2">
+              <button onClick={verifyNow} className="h-10 px-4 rounded-md bg-black text-white text-sm">Verify Now</button>
               <button onClick={()=>{ if (ocrText){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([ocrText],{type:'text/plain'})); a.download='ocr.txt'; a.click(); } }} className="h-10 px-4 rounded-md border border-neutral-300 hover:bg-neutral-50 text-sm">Download OCR text</button>
               <button onClick={()=>router.push('/eligibility')} className="h-10 px-4 rounded-md bg-black text-white text-sm">Back to Eligibility</button>
             </div>

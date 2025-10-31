@@ -143,8 +143,7 @@ export default function EligibilityPage() {
                 { href: "/eligibility", label: "ELIGIBILITY", active: true },
                 { href: "/verification", label: "VERIFICATION" },
                 { href: "/offers", label: "OFFERS" },
-                { href: "/#tracker", label: "TRACKER" },
-                { href: "/#sanction", label: "SANCTION" },
+                { href: "/tracker", label: "TRACKER" },
                 { href: "/account", label: "MY ACCOUNT" },
               ].map((item) => (
                 <li key={item.label}>
@@ -505,9 +504,59 @@ export default function EligibilityPage() {
                 </div>
               </Section>
 
-              <Link href="/account/files/123" className="mt-2 inline-flex items-center justify-center h-11 rounded-xl bg-black text-white text-sm hover:opacity-90">
-                View Full File
-              </Link>
+              <button
+                onClick={async ()=>{
+                  const { data: auth } = await supabase.auth.getUser()
+                  const userId = auth.user?.id
+                  if (!userId) return
+                  const payload = {
+                    user_id: userId,
+                    data: file,
+                    eligibility_score: file.insights.score,
+                    confidence: file.insights.confidence,
+                    status: 'pending',
+                  }
+                  await supabase.from('loan_files').insert(payload)
+                  const flat = {
+                    user_id: userId,
+                    full_name: file.personal.fullName || null,
+                    dob: file.personal.dob || null,
+                    gender: file.personal.gender || null,
+                    city: file.personal.city || null,
+                    state: file.personal.state || null,
+                    address: file.personal.address || null,
+                    phone: file.personal.contact || null,
+                    email: file.personal.email || null,
+                    employment_type: file.employment.type || null,
+                    employer: file.employment.employer || null,
+                    title: file.employment.title || null,
+                    experience_years: file.employment.experienceYears || null,
+                    monthly_income: file.employment.monthlyIncome || null,
+                    existing_loans: file.financial.existingLoans || null,
+                    total_emi: file.financial.totalEmi || null,
+                    monthly_expenses: file.financial.monthlyExpenses || null,
+                    bank_account_type: file.financial.bankAccountType || null,
+                    credit_score: file.financial.creditScore || null,
+                    annual_income: file.financial.annualIncome || null,
+                    loan_type: file.loan.type || null,
+                    loan_amount: file.loan.amount || null,
+                    loan_tenure: file.loan.tenure || null,
+                    loan_purpose: file.loan.purpose || null,
+                    repayment_start_date: file.loan.startDate || null,
+                    collateral: file.loan.collateral || null,
+                    residential_type: file.additional.residentialType || null,
+                    dependents: file.additional.dependents || null,
+                    pan_or_aadhaar: file.additional.panOrAadhaar || null,
+                    marital_status: file.additional.maritalStatus || null,
+                    eligibility_score: file.insights.score || null,
+                    confidence: file.insights.confidence || null,
+                  }
+                  await supabase.from('eligibility').upsert(flat, { onConflict: 'user_id' })
+                }}
+                className="mt-2 inline-flex items-center justify-center h-11 rounded-xl bg-black text-white text-sm hover:opacity-90"
+              >
+                Push to Database
+              </button>
             </div>
           </div>
         </div>

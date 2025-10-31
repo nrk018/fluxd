@@ -93,9 +93,7 @@ export default function HomePage() {
     },
     {
       id: '005',
-      slug: 'sanction',
-      title: 'e-Sign & Auto Sanction',
-      desc: 'Complete KYC and sign digitally; loan gets sanctioned instantly without visiting any branch.'
+      // removed sanction section
     },
     {
       id: '006',
@@ -104,8 +102,17 @@ export default function HomePage() {
       desc: 'View EMI schedules, payment history, and upcoming dues in one simple, encrypted interface.'
     }
   ] as const
-  const handleBegin = () => {
-    router.push('/login')
+  const handleBegin = async () => {
+    try {
+      const { data } = await supabase.auth.getUser()
+      if (data?.user) {
+        router.push('/eligibility')
+      } else {
+        router.push('/login')
+      }
+    } catch {
+      router.push('/login')
+    }
   }
 
   useEffect(() => {
@@ -147,8 +154,7 @@ export default function HomePage() {
               { href: "/eligibility", label: "ELIGIBILITY" },
               { href: "/verification", label: "VERIFICATION" },
               { href: "/offers", label: "OFFERS" },
-              { href: "#tracker", label: "TRACKER" },
-              { href: "#sanction", label: "SANCTION" },
+              { href: "/tracker", label: "TRACKER" },
               { href: "/account", label: "MY ACCOUNT" },
             ].map((item) => (
               <li key={item.label}>

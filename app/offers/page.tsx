@@ -95,8 +95,7 @@ export default function OffersPage() {
                 { href: "/eligibility", label: "ELIGIBILITY" },
                 { href: "/verification", label: "VERIFICATION" },
                 { href: "/offers", label: "OFFERS", active: true },
-                { href: "/#tracker", label: "TRACKER" },
-                { href: "/#sanction", label: "SANCTION" },
+                { href: "/tracker", label: "TRACKER" },
                 { href: "/account", label: "MY ACCOUNT" },
               ].map((item) => (
                 <li key={item.label}>
@@ -319,7 +318,7 @@ export default function OffersPage() {
                 </div>
               )}
               <div className="flex gap-3 pt-4 border-t border-neutral-200">
-                <button onClick={() => router.push('/#sanction')} className="flex-1 h-11 rounded-md bg-black text-white text-sm hover:opacity-90">Apply Now</button>
+        <button onClick={() => router.push('/eligibility')} className="flex-1 h-11 rounded-md bg-black text-white text-sm hover:opacity-90">Apply Now</button>
                 <button onClick={() => setSelectedOffer(null)} className="flex-1 h-11 rounded-md border border-neutral-300 hover:bg-neutral-50 text-sm">Close</button>
               </div>
             </div>
@@ -371,7 +370,7 @@ function OfferCard({ offer, onView }: { offer: Offer; onView: () => void }) {
       )}
       <div className="flex gap-2">
         <button onClick={onView} className="flex-1 h-9 rounded-md border border-neutral-300 hover:bg-neutral-50 text-xs">View Details</button>
-        <button onClick={() => window.location.href = '/#sanction'} className="flex-1 h-9 rounded-md bg-black text-white text-xs hover:opacity-90">Apply Now</button>
+        <button onClick={() => router.push('/eligibility')} className="flex-1 h-9 rounded-md bg-black text-white text-xs hover:opacity-90">Apply Now</button>
       </div>
     </div>
   )

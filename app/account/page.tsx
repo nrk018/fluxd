@@ -28,10 +28,10 @@ export default function AccountPage() {
         setEmail(data.user.email || '')
         const { data: prof, error: perr } = await supabase
           .from('profiles')
-          .select('full_name, occupation, earnings, city, country, username, birthday, phone, annual_income')
+          .select('*')
           .eq('user_id', data.user.id)
           .maybeSingle()
-        if (perr) throw perr
+        if (perr) console.warn('profiles select error:', perr)
         if (active) setProfile(prof)
         // Load recent loan files
         const { data: lf } = await supabase
