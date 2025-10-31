@@ -1,17 +1,12 @@
-import { BetterAuth } from "better-auth"
-import { GoogleProvider } from "better-auth/providers/google"
+// Stub for better-auth (not currently used - using Supabase instead)
+// This file exists to prevent build errors from API route imports
 
-export const auth = BetterAuth({
-  baseURL: process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL || "http://localhost:3000",
-  secret: process.env.BETTER_AUTH_SECRET!,
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
-  ],
-})
+export const auth = {
+  handlers: {
+    GET: async () => new Response("Not implemented", { status: 501 }),
+    POST: async () => new Response("Not implemented", { status: 501 }),
+  },
+  getSession: async () => null,
+}
 
-export type Session = Awaited<ReturnType<typeof auth.getSession>>
-
-
+export type Session = null

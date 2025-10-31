@@ -8,8 +8,10 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
@@ -19,27 +21,43 @@ export default function LoginPage() {
     e.preventDefault()
     setError(null)
     setLoading(true)
-    const { error: err } = await supabase.auth.signInWithPassword({ email, password })
-    if (err) {
+    try {
+      const { data: authData, error: err } = await supabase.auth.signInWithPassword({ email, password })
+      if (err) {
+        setLoading(false)
+        setError(err.message)
+        return
+      }
+      
+      // Wait a moment for session to be established
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // Check for existing profile; if found, go home, else onboarding
+      const { data: userRes, error: userErr } = await supabase.auth.getUser()
+      if (userErr || !userRes?.user?.id) {
+        setLoading(false)
+        setError("Failed to get user session. Please try again.")
+        return
+      }
+      
+      const userId = userRes.user.id
+      const { data: profile, error: profileErr } = await supabase
+        .from('profiles')
+        .select('user_id')
+        .eq('user_id', userId)
+        .maybeSingle()
+      
+      if (profileErr) {
+        console.error('Profile fetch error:', profileErr)
+      }
+      
       setLoading(false)
-      setError(err.message)
-      return
-    }
-    // Check for existing profile; if found, go home, else onboarding
-    const { data: userRes } = await supabase.auth.getUser()
-    const userId = userRes.user?.id
-    if (!userId) {
+      router.push(profile ? '/' : '/onboarding')
+    } catch (e: any) {
       setLoading(false)
-      window.location.href = "/login"
-      return
+      setError(e?.message || 'An unexpected error occurred. Please try again.')
+      console.error('Login error:', e)
     }
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('user_id')
-      .eq('user_id', userId)
-      .maybeSingle()
-    setLoading(false)
-    window.location.href = profile ? '/' : '/onboarding'
   }
   return (
     <main className="min-h-screen flex items-center justify-center p-6">
