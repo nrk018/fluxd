@@ -224,7 +224,7 @@ export function TrackerTable({ entries }: TrackerTableProps) {
             </tbody>
           </table>
         </div>
-      </motion.div>
+      </div>
 
       {/* Modal for detailed view */}
       {selectedEntry && (
