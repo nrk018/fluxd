@@ -6,6 +6,8 @@ import { SiteFooter } from "@/components/site-footer"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabaseClient"
 
+export const dynamic = 'force-dynamic'
+
 type Msg = { role: "user" | "assistant"; text: string }
 
 export default function EligibilityPage() {

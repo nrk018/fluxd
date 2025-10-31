@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabaseClient"
 import { useEffect, useState } from "react"
 
+export const dynamic = 'force-dynamic'
+
 export default function AccountPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)

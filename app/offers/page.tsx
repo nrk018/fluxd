@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabaseClient"
 import { SiteFooter } from "@/components/site-footer"
 
+export const dynamic = 'force-dynamic'
+
 type Offer = {
   company: string
   loanType: string
