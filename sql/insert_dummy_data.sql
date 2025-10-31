@@ -51,7 +51,7 @@ FROM (VALUES
 ('88889999-aaaa-bbbb-cccc-ddddeeeeffff', 'Deepika Ranganathan', '1992-02-23', 'Female', 'Hubli', 'Karnataka', 'India', '+91 98765 43247', 'deepika.ranganathan@email.com', 'Salaried Employees', 'Middle Income Group I (MIG-I)', 690000, 'deepika_ranganathan', '1992-02-23', '+91 98765 43247'),
 ('9999aaaa-bbbb-cccc-dddd-eeeeffff1111', 'Mohit Bansal', '1988-10-05', 'Male', 'Varanasi', 'Uttar Pradesh', 'India', '+91 98765 43248', 'mohit.bansal@email.com', 'Small Business Owners / Entrepreneurs', 'High Income Group (HIG)', 2500000, 'mohit_bansal', '1988-10-05', '+91 98765 43248')
 ) AS v(user_id, full_name, dob, gender, city, state, country, contact_number, email, occupation, earnings, annual_income, username, birthday, phone)
-JOIN users u ON u.email = v.email;
+JOIN auth.users u ON lower(u.email) = lower(v.email);
 
 -- Eligibility table inserts (40 records)
 INSERT INTO eligibility (user_id, employment_type, monthly_income, loan_type, loan_amount, loan_tenure, eligibility_score, confidence, credit_score) VALUES

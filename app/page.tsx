@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { useEffect, useRef, useState } from "react"
 import { LoaderOverlay } from "@/components/loader-overlay"
 import { SiteFooter } from "@/components/site-footer"
@@ -102,6 +103,14 @@ export default function HomePage() {
       desc: 'View EMI schedules, payment history, and upcoming dues in one simple, encrypted interface.'
     }
   ] as const
+  const sectionImages: Record<string, string> = {
+    '001': '/1.png',
+    '002': '/2.png',
+    '003': '/3.png',
+    '004': '/4.png',
+    '005': '/5.png',
+    '006': '/6.png',
+  }
   const handleBegin = async () => {
     try {
       const { data } = await supabase.auth.getUser()
@@ -257,7 +266,16 @@ export default function HomePage() {
             <div id={f.slug} key={f.id} className="min-h-screen md:h-screen grid grid-cols-1 lg:grid-cols-12 border-t border-neutral-200 scroll-mt-20">
               {/* Image side */}
               <div className={`${imageLeft ? "order-1 lg:order-1" : "order-1 lg:order-2"} lg:col-span-6 border-b lg:border-b-0 lg:border-r border-neutral-200 flex items-center p-6 md:p-10`}>
-                <div className="w-full aspect-[16/10] md:aspect-[4/3] lg:aspect-[16/12] rounded-xl border border-neutral-200 bg-gradient-to-br from-neutral-100 to-neutral-50 reveal-on-scroll" />
+                <div className="w-full rounded-xl border border-neutral-200 overflow-hidden reveal-on-scroll">
+                  <Image
+                    src={sectionImages[f.id] || '/images/placeholder.png'}
+                    alt={`${f.id} section visual`}
+                    width={1600}
+                    height={1200}
+                    className="w-full h-auto object-cover"
+                    priority={f.id === '001'}
+                  />
+                </div>
               </div>
               {/* Text side */}
               <div className={`${imageLeft ? "order-2 lg:order-2" : "order-2 lg:order-1"} lg:col-span-6 flex items-center p-8 md:p-16`}>
